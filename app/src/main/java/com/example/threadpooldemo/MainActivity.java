@@ -9,7 +9,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ScheduledExecutorService;
@@ -144,14 +143,18 @@ public class MainActivity extends AppCompatActivity {
          * Future.get()会造成线程阻塞，等待返回结果；
          *  FutureTask done()方法会在任务执行结束后回调
          */
-        CallableDemo<String> task = new CallableDemo<>();
+        CallableDemo task = new CallableDemo();
+
 //        Future<String> result = threadPool.submit(task);
 //        try {
 //            Log.e("fff", "-------子线程执行结果--======" + result.get());
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-//        threadPool.shutdown();
+
+        /**
+         * 执行计算任务，回调结果
+         */
         FutureTask<String> futureTask = new FutureTask<String>(task) {
             @Override
             protected void done() {
@@ -163,9 +166,30 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         threadPool.submit(futureTask);
+
+//        /**
+//         * 任务成功完成之后，返回指定的结果
+//         */
+//        Runnable testRunnable = new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    Thread.sleep(5000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                Log.e("fff", "-------testRunnable--======");
+//            }
+//        };
+//        Future<String> result = threadPool.submit(testRunnable, "aaaaaaaaaa");
+//        try {
+//            Log.e("fff", "-------子线程执行结果--======" + result.get());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
-    class CallableDemo<S> implements Callable<String> {
+    class CallableDemo implements Callable<String> {
         @Override
         public String call() throws Exception {
             Log.e("fff", "-------子线程开始执行--======" + Thread.currentThread().getName());
